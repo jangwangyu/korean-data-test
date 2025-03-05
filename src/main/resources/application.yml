@@ -1,2 +1,19 @@
+debug: false
+logging:
+  level:
+    org.example.koreandatatest: debug
+    org.springframework.web.servlet: debug #Request Response Logging
+
+
 spring:
-  application.name: korean-data-test
+  application.name: korean-data-test # 어플리케이션 이름
+  jpa: # JPA 설정
+    open-in-view: false # OpenEntityManagerInViewFilter 사용 안함
+    defer-datasource-initialization: true # 데이터소스 초기화 지연
+    hibernate:
+      ddl-auto: create  # 실무에선 validate 많이 씀
+    show-sql: true # SQL 보기
+    properties:
+      hibernate:
+        format_sql: true # SQL 포맷팅
+  sql.init.mode: always # SQL 초기화 모드
