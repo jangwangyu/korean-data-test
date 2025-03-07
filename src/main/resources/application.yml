@@ -7,6 +7,8 @@ logging:
 
 spring:
   application.name: korean-data-test # 어플리케이션 이름
+  datasource:
+    url: jdbc:h2:mem:testdb
   jpa: # JPA 설정
     open-in-view: false # OpenEntityManagerInViewFilter 사용 안함
     defer-datasource-initialization: true # 데이터소스 초기화 지연
@@ -17,3 +19,10 @@ spring:
       hibernate:
         format_sql: true # SQL 포맷팅
   sql.init.mode: always # SQL 초기화 모드
+
+---
+
+spring:
+  config.activate.on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MYSQL;DATABASE_TO_LOWER=TRUE
