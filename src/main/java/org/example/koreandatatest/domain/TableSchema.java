@@ -1,11 +1,13 @@
 package org.example.koreandatatest.domain;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -26,20 +28,18 @@ import lombok.ToString;
 @ToString(callSuper = true) // toString() 메서드 자동 생성
 @Entity
 public class TableSchema extends AuditingFields{
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Setter private String schemaName;
-  @Setter private String userId;
+  @Setter @Column(nullable = false) private String schemaName;
+  @Setter @Column(nullable = false) private String userId;
+
   @Setter private LocalDateTime exportedAt;
 
-  private LocalDateTime createdAt;
-  private String createdBy;
-  private LocalDateTime modifiedAt;
-  private String modifiedBy;
-
   @ToString.Exclude
+  @OrderBy("fieldOrder ASC")
   @OneToMany(mappedBy = "tableSchema", cascade = CascadeType.ALL, orphanRemoval = true)
   private final Set<SchemaField> schemaFields = new LinkedHashSet<>();
 
