@@ -17,7 +17,7 @@ public enum MockDataType { // enum 클래스
   UUID(Set.of(), STRING),
   EMAIL(Set.of(), STRING),
   CAR(Set.of(), STRING),
-  ROW_NULBER(Set.of("start", "step"), NUMBER),
+  ROW_NUMBER(Set.of("start", "step"), NUMBER),
   NAME(Set.of(), STRING)
   ;
 

@@ -2,6 +2,8 @@ package org.example.koreandatatest.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +33,7 @@ public class SchemaField extends AuditingFields{
   @ManyToOne(optional = false)
   private TableSchema tableSchema;
 
-  @Setter private @Column(nullable = false) MockDataType mockDataType; // enum을 다룰 수 있게끔
+  @Setter private @Column(nullable = false)  @Enumerated(EnumType.STRING) MockDataType mockDataType; // enum을 다룰 수 있게끔
   @Setter private @Column(nullable = false) Integer fieldOrder;
   @Setter private @Column(nullable = false) Integer blankPercent;
   @Setter private @Column(nullable = false) String fieldName;
