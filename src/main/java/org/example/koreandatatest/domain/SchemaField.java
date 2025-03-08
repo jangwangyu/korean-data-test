@@ -33,10 +33,10 @@ public class SchemaField extends AuditingFields{
   @ManyToOne(optional = false)
   private TableSchema tableSchema;
 
-  @Setter private @Column(nullable = false)  @Enumerated(EnumType.STRING) MockDataType mockDataType; // enum을 다룰 수 있게끔
-  @Setter private @Column(nullable = false) Integer fieldOrder;
-  @Setter private @Column(nullable = false) Integer blankPercent;
-  @Setter private @Column(nullable = false) String fieldName;
+  @Setter @Column(nullable = false) @Enumerated(EnumType.STRING) private MockDataType mockDataType; // enum을 다룰 수 있게끔
+  @Setter @Column(nullable = false) private Integer fieldOrder;
+  @Setter @Column(nullable = false) private Integer blankPercent;
+  @Setter @Column(nullable = false) private String fieldName;
 
   private String typeOptionJson; // JSON 형태로 저장 {min: 1, max: 10, ...}
   private String forceValue; // 강제로 넣을 값
