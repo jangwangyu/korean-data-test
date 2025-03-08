@@ -76,8 +76,7 @@ public class SchemaField extends AuditingFields{
     }
     return Objects.equals(this.getId(), that.getId());
   }
-
-
+  
   @Override
   public int hashCode() {
     if(getId() == null) {
