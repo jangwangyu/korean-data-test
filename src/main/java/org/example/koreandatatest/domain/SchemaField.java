@@ -26,7 +26,7 @@ import org.example.koreandatatest.domain.constant.MockDataType;
 public class SchemaField extends AuditingFields{
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.IDENTITY) 
   private Long id;
 
   @Setter
@@ -35,7 +35,7 @@ public class SchemaField extends AuditingFields{
 
   @Setter @Column(nullable = false) @Enumerated(EnumType.STRING) private MockDataType mockDataType; // enum을 다룰 수 있게끔
   @Setter @Column(nullable = false) private Integer fieldOrder;
-  @Setter @Column(nullable = false) private Integer blankPercent;
+  @Setter @Column(nullable = false) private Integer blankPercent; // 빈칸 비율
   @Setter @Column(nullable = false) private String fieldName;
 
   private String typeOptionJson; // JSON 형태로 저장 {min: 1, max: 10, ...}
