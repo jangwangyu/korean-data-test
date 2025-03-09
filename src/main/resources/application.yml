@@ -3,6 +3,8 @@ logging:
   level:
     org.example.koreandatatest: debug
     org.springframework.web.servlet: debug #Request Response Logging
+    org.hibernate.orm.jdbc.bind: trace #SQL Parameter Logging
+    org.springframework.test.context.transaction.TransactionContext: debug #Transaction Logging
 
 
 spring:
