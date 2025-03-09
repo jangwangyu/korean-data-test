@@ -26,7 +26,7 @@ import org.example.koreandatatest.domain.constant.MockDataType;
 @ToString
 @Table(uniqueConstraints = {
     @UniqueConstraint(
-        columnNames = {"mockDataType", "mockDataValue"})
+        columnNames = {"mockDataType", "mockDataValue"}) // UK
 })
 @Entity
 public class MockData {

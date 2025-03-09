@@ -6,8 +6,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -26,6 +29,15 @@ import lombok.ToString;
 
 @Getter
 @ToString(callSuper = true) // toString() 메서드 자동 생성
+@Table(
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"userId", "schemaName"})
+    },indexes = {
+        @Index(columnList = "createdAt"),
+        @Index(columnList = "modifiedAt")
+  }
+
+)
 @Entity
 public class TableSchema extends AuditingFields{
 
