@@ -4,6 +4,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,15 +16,15 @@ import org.example.koreandatatest.DTO.request.TableSchemaRequest;
 import org.example.koreandatatest.config.SecurityConfig;
 import org.example.koreandatatest.domain.constant.MockDataType;
 import org.example.koreandatatest.util.FromDataEncoder;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-@Disabled("#15 강의 내용에서 테스트만 다루므로 테스트를 먼저 작성함. 아직 구현이 없으므로 비활성화")
+//@Disabled("#15 강의 내용에서 테스트만 다루므로 테스트를 먼저 작성함. 아직 구현이 없으므로 비활성화")
 @DisplayName("[Controller] 테이블 스키마 컨트롤러 테스트")
 @Import({SecurityConfig.class, FromDataEncoder.class})
 @WebMvcTest
@@ -65,6 +66,7 @@ public record TableSchemaControllerTest(
                   .with(csrf())
         )
         .andExpect(status().is3xxRedirection())
+        .andExpect(flash().attribute("tableSchemaRequest", request))
         .andExpect(redirectedUrl("/table-schema"));
   }
 
@@ -102,8 +104,8 @@ public record TableSchemaControllerTest(
     // When&Then
     mvc.perform(get("/table-schema/export"))
         .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.TEXT_PLAIN))
-        .andExpect(header().string("Content-Disposition", "attachment; filename=table-schema.sql"))
+        .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
+        .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=table-schema.txt"))
         .andExpect(content().string("download complete!")); // 나중에 바꿔야 함
   }
 }
