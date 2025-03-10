@@ -9,7 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import java.util.List;
+import org.example.koreandatatest.DTO.request.SchemaFieldRequest;
+import org.example.koreandatatest.DTO.request.TableSchemaRequest;
 import org.example.koreandatatest.config.SecurityConfig;
+import org.example.koreandatatest.domain.constant.MockDataType;
+import org.example.koreandatatest.util.FromDataEncoder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,9 +25,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 @Disabled("#15 강의 내용에서 테스트만 다루므로 테스트를 먼저 작성함. 아직 구현이 없으므로 비활성화")
 @DisplayName("[Controller] 테이블 스키마 컨트롤러 테스트")
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, FromDataEncoder.class})
 @WebMvcTest
-public record TableSchemaControllerTest(@Autowired MockMvc mvc) {
+public record TableSchemaControllerTest(
+    @Autowired MockMvc mvc,
+    @Autowired FromDataEncoder fromDataEncoder
+) {
 
   @DisplayName("[GET] 테이블 스키마 페이지 -> 테이블 스키마 뷰 (정상)")
   @Test
@@ -40,11 +48,19 @@ public record TableSchemaControllerTest(@Autowired MockMvc mvc) {
   @Test
   void givenTableSchemaRequest_whenCreatingOrUpdating_thenRedirectsToTableSchemaView() throws Exception {
     // Given
-
+    TableSchemaRequest request = TableSchemaRequest.of(
+        "test_schema",
+        "홍길동",
+        List.of(
+            SchemaFieldRequest.of("id", MockDataType.ROW_NUMBER, 1, 0, null, null),
+            SchemaFieldRequest.of("name", MockDataType.NAME, 2, 10, null, null),
+            SchemaFieldRequest.of("age", MockDataType.NUMBER, 3, 20, null, null)
+        )
+    );
     // When&Then
     mvc.perform(
               post("/table-schema")
-                  .content("sample data") // 나중에 제대로 바꿔줘야 함
+                  .content(fromDataEncoder.encode(request)) // 나중에 제대로 바꿔줘야 함
                   .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                   .with(csrf())
         )
