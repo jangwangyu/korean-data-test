@@ -6,16 +6,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.example.koreandatatest.DTO.request.SchemaFieldRequest;
+import org.example.koreandatatest.DTO.request.TableSchemaExportRequest;
 import org.example.koreandatatest.DTO.request.TableSchemaRequest;
 import org.example.koreandatatest.config.SecurityConfig;
+import org.example.koreandatatest.domain.constant.ExportFileType;
 import org.example.koreandatatest.domain.constant.MockDataType;
-import org.example.koreandatatest.util.FromDataEncoder;
+import org.example.koreandatatest.util.FormDataEncoder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +30,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 //@Disabled("#15 강의 내용에서 테스트만 다루므로 테스트를 먼저 작성함. 아직 구현이 없으므로 비활성화")
 @DisplayName("[Controller] 테이블 스키마 컨트롤러 테스트")
-@Import({SecurityConfig.class, FromDataEncoder.class})
+@Import({SecurityConfig.class, FormDataEncoder.class})
 @WebMvcTest
 public record TableSchemaControllerTest(
     @Autowired MockMvc mvc,
-    @Autowired FromDataEncoder fromDataEncoder
+    @Autowired FormDataEncoder fromDataEncoder,
+    @Autowired ObjectMapper mapper
+
 ) {
 
   @DisplayName("[GET] 테이블 스키마 페이지 -> 테이블 스키마 뷰 (정상)")
@@ -42,6 +48,9 @@ public record TableSchemaControllerTest(
     mvc.perform(get("/table-schema"))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+        .andExpect(model().attributeExists("tableSchema"))
+        .andExpect(model().attributeExists("mockDataTypes"))
+        .andExpect(model().attributeExists("fileTypes"))
         .andExpect(view().name("table-schema"));
   }
 
@@ -100,12 +109,22 @@ public record TableSchemaControllerTest(
   @Test
   void givenTableSchema_whenDownloading_thenReturnsFile() throws Exception {
     // Given
-
+    TableSchemaExportRequest request = TableSchemaExportRequest.of(
+        "test_schema",
+        77,
+        ExportFileType.JSON,
+        List.of(
+            SchemaFieldRequest.of("id", MockDataType.ROW_NUMBER, 1, 0, null, null),
+            SchemaFieldRequest.of("name", MockDataType.NAME, 2, 10, "option", "well"),
+            SchemaFieldRequest.of("age", MockDataType.NUMBER, 3, 20, null, null)
+        )
+    );
+    String queryParam = fromDataEncoder.encode(request, false);
     // When&Then
-    mvc.perform(get("/table-schema/export"))
+    mvc.perform(get("/table-schema/export?" + queryParam))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
         .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=table-schema.txt"))
-        .andExpect(content().string("download complete!")); // 나중에 바꿔야 함
+        .andExpect(content().json(mapper.writeValueAsString(request))); // 나중에 바꿔야 함
   }
 }

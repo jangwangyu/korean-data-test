@@ -1,6 +1,8 @@
 package org.example.koreandatatest.domain.constant;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 @Getter
@@ -24,6 +26,13 @@ public enum MockDataType { // enum 클래스
   private final Set<String> requiredOptions; // 필수 옵션
   private final MockDataType baseType; // 기본 타입
 
+  private static final List<MockDataTypeObject> objects =
+      Stream.of(MockDataType.values()).map(MockDataType::toObject).toList();
+
+  public static List<MockDataTypeObject> toObjects() {
+    return objects;
+  }
+
   public boolean isBaseType() {return baseType == null;} // 기본 타입인지 확인하는 메서드
 
   public MockDataTypeObject toObject() {
@@ -33,6 +42,8 @@ public enum MockDataType { // enum 클래스
         this.baseType == null ? null : this.baseType.name() // baseType이 null이 아니면 baseType 이름을 리턴
     );
   }
+
+
 
   public record MockDataTypeObject(
       String name,

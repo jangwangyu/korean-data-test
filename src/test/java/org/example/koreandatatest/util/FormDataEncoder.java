@@ -9,26 +9,38 @@ import org.springframework.boot.test.context.TestComponent;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @TestComponent
-public class FromDataEncoder {
+public class FormDataEncoder {
 
   private final ObjectMapper mapper;
 
-  public FromDataEncoder(ObjectMapper mapper) {
+  public FormDataEncoder(ObjectMapper mapper) {
     this.mapper = mapper;
   }
 
   /**
    *  데이터를 post form data 형식으로 인코딩 한다.
    *  @param obj 인코딩할 데이터
+   *  @Param applyUrlEncoding url 인코딩을 적용할지 여부
    *  @return from data 형식으로 인코딩된 문자열
    */
 
   public String encode(Object obj) {
+    return encode(obj, true);
+  }
+
+  /**
+   *  데이터를 post form data 형식으로 인코딩 한다.
+   *  @param obj 인코딩할 데이터
+   *  @Param applyUrlEncoding url 인코딩을 적용할지 여부
+   *  @return from data 형식으로 인코딩된 문자열
+   */
+
+  public String encode(Object obj, boolean applyUrlEncoding) {
     Map<String, Object> map = mapper.convertValue(obj, new TypeReference<>() {});
     UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
 
     map.forEach((key, value) -> addToBuilder(builder, key, value));
-    return builder.build().encode().getQuery();
+    return applyUrlEncoding ? builder.build().encode().getQuery() : builder.build().getQuery();
   }
 
   private void addToBuilder(UriComponentsBuilder builder, String key, Object value) {
