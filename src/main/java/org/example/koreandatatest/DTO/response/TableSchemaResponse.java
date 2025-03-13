@@ -6,7 +6,7 @@ import org.example.koreandatatest.DTO.TableSchemaDto;
 public record TableSchemaResponse(
     String schemaName,
     String userId,
-    List<SchemaFieldResponse> schemaField
+    List<SchemaFieldResponse> schemaFields
 ) {
   public static TableSchemaResponse fromDto(TableSchemaDto dto) {
     return new TableSchemaResponse(
