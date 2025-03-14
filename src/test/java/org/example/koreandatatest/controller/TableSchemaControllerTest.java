@@ -1,5 +1,6 @@
 package org.example.koreandatatest.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -54,6 +55,22 @@ public record TableSchemaControllerTest(
         .andExpect(view().name("table-schema"));
   }
 
+  @DisplayName("[GET] 테이블 스키마 조회, 로그인 + 특정 테이블 스키마 -> 테이블 스키마 뷰 (정상)")
+  @Test
+  void givenAuthenticatedUserAndSchemaName_whenRequesting_thenShowsTableSchemaView() throws Exception {
+    // Given
+    var schemaName = "test_schema";
+    // When&Then
+    mvc.perform(get("/table-schema").queryParam("schemaName", schemaName))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+        .andExpect(model().attributeExists("tableSchema"))
+        .andExpect(model().attributeExists("mockDataTypes"))
+        .andExpect(model().attributeExists("fileTypes"))
+        .andExpect(content().string(containsString(schemaName)))
+        .andExpect(view().name("table-schema"));
+  }
+
   @DisplayName("[POST] 테이블 스키마 생성, 변경 (정상)")
   @Test
   void givenTableSchemaRequest_whenCreatingOrUpdating_thenRedirectsToTableSchemaView() throws Exception {
@@ -79,7 +96,7 @@ public record TableSchemaControllerTest(
         .andExpect(redirectedUrl("/table-schema"));
   }
 
-  @DisplayName("[GET] 내 스키마 목록 페이지 -> 내 스키마 목록 뷰 (정상)")
+  @DisplayName("[GET] 내 스키마 목록 조회 -> 내 스키마 목록 뷰 (정상)")
   @Test
   void givenAuthenticated_whenRequesting_thenShowsMySchemaView() throws Exception {
     // Given
@@ -88,6 +105,7 @@ public record TableSchemaControllerTest(
     mvc.perform(get("/table-schema/my-schemas"))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+        .andExpect(model().attributeExists("tableSchemas"))
         .andExpect(view().name("my-schemas"));
   }
 
