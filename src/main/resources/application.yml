@@ -23,6 +23,12 @@ spring:
       hibernate:
         format_sql: true # SQL 포맷팅
   sql.init.mode: always # SQL 초기화 모드
+  security.oauth2.client:
+        registration:
+          github:
+            client-id: ${GITHUB_OAUTH_CLIENT_ID}
+            client-secret: ${GITHUB_OAUTH_CLIENT_SECRET}
+
 
 ---
 
