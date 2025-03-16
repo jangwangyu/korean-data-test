@@ -1,7 +1,7 @@
 -- 테이블 스키마
 insert into table_schema(id, schema_name, user_id, exported_at,created_at,created_by,modified_at,modified_by)
 values
-    (1,'test_schema','djkeh',null,now(),'asd',now(),'asd')
+    (1,'test_schema','jang',null,now(),'jangwangyu',now(),'jangwangyu')
 ;
 
 -- 테이블 스키마 id를 직접 입력했으니, auto_increment 수치를 직접 제어해야함
