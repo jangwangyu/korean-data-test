@@ -63,7 +63,7 @@ public class JpaRepositoryTest {
         .hasSize(1) // table schema 1개
         .first() // 첫번째 table schema를 object로 변환
         .hasFieldOrPropertyWithValue("schemaName", "test_schema")
-        .hasFieldOrPropertyWithValue("userId", "jang") // object의 필드를 검사
+        .hasFieldOrPropertyWithValue("userId", "jangwangyu") // object의 필드를 검사
         .extracting("schemaFields", InstanceOfAssertFactories.COLLECTION) // 한번 더 추출해서 schemaFields의 정보를 컬렉션으로 불러옴
         .hasSize(4);
   }
@@ -111,7 +111,7 @@ public class JpaRepositoryTest {
     // Then
     assertThat(updated)
         .hasFieldOrPropertyWithValue("schemaName", "test_modified")
-        .hasFieldOrPropertyWithValue("createdBy", "jangwangyu")
+        .hasFieldOrPropertyWithValue("createdBy", "jang")
         .hasFieldOrPropertyWithValue("modifiedBy", TEST_AUDITOR)
         .extracting("schemaFields", InstanceOfAssertFactories.COLLECTION)
         .hasSize(1);

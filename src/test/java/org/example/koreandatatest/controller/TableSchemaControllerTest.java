@@ -9,11 +9,11 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlTemplate;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -101,7 +101,7 @@ public class TableSchemaControllerTest {
             SchemaFieldRequest.of("age", MockDataType.NUMBER, 3, 20, null, null)
         )
     );
-    willDoNothing().given(tableSchemaService).saveMySchema(request.toDto(githubUser.id()));
+    willDoNothing().given(tableSchemaService).upsertTableSchema(request.toDto(githubUser.id()));
     // When&Then
     mvc.perform(
               post("/table-schema")
@@ -111,9 +111,8 @@ public class TableSchemaControllerTest {
                   .with(oauth2Login().oauth2User(githubUser))
         )
         .andExpect(status().is3xxRedirection())
-        .andExpect(flash().attribute("tableSchemaRequest", request))
-        .andExpect(redirectedUrl("/table-schema"));
-    then(tableSchemaService).should().saveMySchema(request.toDto(githubUser.id()));
+        .andExpect(redirectedUrlTemplate("/table-schema?schemaName={schemaName}", request.schemaName()));
+    then(tableSchemaService).should().upsertTableSchema(request.toDto(githubUser.id()));
   }
 
   @DisplayName("[GET] 내 스키마 목록 조회 -> 내 스키마 목록 뷰 (정상)")
@@ -150,6 +149,7 @@ public class TableSchemaControllerTest {
     // Given
     var githubUser = new GithubUser("test-id", "test-name", "test@email.com");
     String schemaName = "test_schema";
+    willDoNothing().given(tableSchemaService).deleteTableSchema(githubUser.id(), schemaName);
     // When&Then
     mvc.perform(
               post("/table-schema/my-schemas/{schemaName}", schemaName)
@@ -158,6 +158,7 @@ public class TableSchemaControllerTest {
         )
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/table-schema/my-schemas"));
+    then(tableSchemaService).should().deleteTableSchema(githubUser.id(), schemaName);
   }
 
   @DisplayName("[GET] 테이블 스키마 파일 다운로드 -> 테이블 스키마 파일 (정상)")

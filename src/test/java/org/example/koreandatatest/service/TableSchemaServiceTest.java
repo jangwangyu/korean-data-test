@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willDoNothing;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -88,11 +89,53 @@ class TableSchemaServiceTest {
   @Test
   void givenTableSchema_whenInserting_thenCreatesTableSchema() {
     // given
-    TableSchemaDto tableSchemaDto = TableSchemaDto.of("table1", "userId",null, Set.of());
-    given(tableSchemaRepository.save(tableSchemaDto.createEntity())).willReturn(null);
+    TableSchemaDto dto = TableSchemaDto.of("table1", "userId",null, Set.of());
+    given(tableSchemaRepository.save(dto.createEntity())).willReturn(null);
     // when
-    sut.saveMySchema(tableSchemaDto);
+    sut.upsertTableSchema(dto);
     // then
-    then(tableSchemaRepository).should().save(tableSchemaDto.createEntity());
+    then(tableSchemaRepository).should().save(dto.createEntity());
+  }
+
+  @DisplayName("존재하지 않는 테이블 스키마 정보가 주어지면, 테이블 스키마를 추가한다.")
+  @Test
+  void givenNonexistentTableSchema_whenUpserting_thenCreatesTableSchema() {
+    // given
+    TableSchemaDto dto = TableSchemaDto.of("table1", "userId",null, Set.of());
+    given(tableSchemaRepository.findByUserIdAndSchemaName(dto.userId(),dto.schemaName())).willReturn(Optional.empty());
+    given(tableSchemaRepository.save(dto.createEntity())).willReturn(null);
+    // when
+    sut.upsertTableSchema(dto);
+    // then
+    then(tableSchemaRepository).should().findByUserIdAndSchemaName(dto.userId(),dto.schemaName());
+    then(tableSchemaRepository).should().save(dto.createEntity());
+  }
+
+  @DisplayName("존재하는 테이블 스키마 정보가 주어지면, 테이블 스키마를 추가한다.")
+  @Test
+  void givenExistentTableSchema_whenUpserting_thenUpdatesTableSchema() {
+    // given
+    TableSchemaDto dto = TableSchemaDto.of("table1", "userId",null, Set.of());
+    TableSchema existingTableSchema = TableSchema.of(dto.schemaName(), dto.userId());
+    given(tableSchemaRepository.findByUserIdAndSchemaName(dto.userId(),dto.schemaName())).willReturn(Optional.of(existingTableSchema));
+    given(tableSchemaRepository.save(dto.createEntity())).willReturn(null);
+    // when
+    sut.upsertTableSchema(dto);
+    // then
+    then(tableSchemaRepository).should().findByUserIdAndSchemaName(dto.userId(),dto.schemaName());
+    then(tableSchemaRepository).should().save(dto.createEntity());
+  }
+
+  @DisplayName("사용자 ID와 스키마 이름이 주어지면, 테이블 스키마를 삭제한다.")
+  @Test
+  void givenUserIdAndSchemaName_whenDeleting_thenDeletesTableSchema() {
+    // given
+    String userId = "userId";
+    String schemaName = "table1";
+    willDoNothing().given(tableSchemaRepository).deleteByUserIdAndSchemaName(userId, schemaName);
+    // when
+    sut.deleteTableSchema(userId, schemaName);
+    // then
+    then(tableSchemaRepository).should().deleteByUserIdAndSchemaName(userId, schemaName);
   }
 }
