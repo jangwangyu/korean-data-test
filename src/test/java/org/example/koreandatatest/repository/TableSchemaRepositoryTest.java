@@ -25,7 +25,7 @@ class TableSchemaRepositoryTest {
   @Test
   void givenUserId_whenSelectingTableSchemas_thenReturnsPagedTableSchema() {
     // Given
-    var userId = "djkeh";
+    var userId = "jang";
     // When
     Page<TableSchema> result = sut.findByUserId(userId, Pageable.ofSize(5));
 
@@ -43,7 +43,7 @@ class TableSchemaRepositoryTest {
   @Test
   void givenUserIdAndSchemaName_whenSelectingTableSchemas_thenReturnsTableSchema() {
     // Given
-    var userId = "djkeh";
+    var userId = "jang";
     var schemaName = "test_schema";
 
     // When
@@ -60,7 +60,7 @@ class TableSchemaRepositoryTest {
   @Test
   void givenUserIdAndSchemaName_whenDeletingTableSchemas_thenDeletes() {
     // Given
-    var userId = "djkeh";
+    var userId = "jang";
     var schemaName = "test_schema";
 
     // When

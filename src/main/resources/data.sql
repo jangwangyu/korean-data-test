@@ -1,7 +1,7 @@
 -- 테이블 스키마
 insert into table_schema(id, schema_name, user_id, exported_at,created_at,created_by,modified_at,modified_by)
 values
-    (1,'test_schema','jang',null,now(),'jangwangyu',now(),'jangwangyu')
+    (1,'test_schema','jangwangyu',null,now(),'jang',now(),'jang')
 ;
 
 -- 테이블 스키마 id를 직접 입력했으니, auto_increment 수치를 직접 제어해야함
@@ -12,10 +12,10 @@ insert into schema_field (table_schema_id, field_order, field_name, mock_data_ty
                           type_option_json, blank_percent, force_value,
                           created_at, created_by, modified_at, modified_by)
 values
-(1,1,'id','ROW_NUMBER','{"start": 1,"step": 1}',0,null,now(),'asd',now(),'asd'),
-(1,2,'age','NUMBER','{"min": 1,"max": 30,"decimals": 0}',50, null,now(),'asd',now(),'asd'),
-(1,6,'name','STRING','{"minLength": 1, "maxLength": 10}', 0, null,now(),'asd',now(),'asd'),
-(1,4,'active','BOOLEAN',null,0,'true',now(),'asd',now(),'asd')
+(1,1,'id','ROW_NUMBER','{"start": 1,"step": 1}',0,null,now(),'jang',now(),'jang'),
+(1,2,'age','NUMBER','{"min": 1,"max": 30,"decimals": 0}',50, null,now(),'jang',now(),'jang'),
+(1,6,'name','STRING','{"minLength": 1, "maxLength": 10}', 0, null,now(),'jang',now(),'jang'),
+(1,4,'active','BOOLEAN',null,0,'true',now(),'jang',now(),'jang')
 ;
 
 
