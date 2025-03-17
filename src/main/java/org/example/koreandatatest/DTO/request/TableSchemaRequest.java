@@ -6,18 +6,16 @@ import org.example.koreandatatest.DTO.TableSchemaDto;
 
 public record TableSchemaRequest(
     String schemaName,
-    String userId,
     List<SchemaFieldRequest> schemaFields
 ) {
   public static TableSchemaRequest of(
       String schemaName,
-      String userId,
       List<SchemaFieldRequest> schemaFields
   ) {
-    return new TableSchemaRequest(schemaName, userId, schemaFields);
+    return new TableSchemaRequest(schemaName, schemaFields);
   }
 
-  public TableSchemaDto toDto() {
+  public TableSchemaDto toDto(String userId) {
     return TableSchemaDto.of(
         schemaName,
         userId,

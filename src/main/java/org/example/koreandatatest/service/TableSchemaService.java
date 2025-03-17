@@ -33,4 +33,8 @@ public class TableSchemaService {
         .orElseThrow(() -> new EntityNotFoundException("테이블 스키마가 없습니다 - UserId:" + userId));
   }
 
+  public void saveMySchema(TableSchemaDto tableSchemaDto) {
+    tableSchemaRepository.save(tableSchemaDto.createEntity());
+  }
+
 }

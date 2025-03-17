@@ -50,9 +50,12 @@ public class TableSchemaController {
 
   @PostMapping("/table-schema")
   public String createOrUpdateTableSchema(
+      @AuthenticationPrincipal GithubUser githubUser,
       TableSchemaRequest tableSchemaRequest,
       RedirectAttributes redirectAttr
   ) {
+    tableSchemaService.saveMySchema(tableSchemaRequest.toDto(githubUser.id()));
+
     redirectAttr.addFlashAttribute("tableSchemaRequest", tableSchemaRequest);
 
     return "redirect:/table-schema";
