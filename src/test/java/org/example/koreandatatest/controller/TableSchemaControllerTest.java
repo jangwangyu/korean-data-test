@@ -28,6 +28,7 @@ import org.example.koreandatatest.DTO.security.GithubUser;
 import org.example.koreandatatest.config.SecurityConfig;
 import org.example.koreandatatest.domain.constant.ExportFileType;
 import org.example.koreandatatest.domain.constant.MockDataType;
+import org.example.koreandatatest.service.SchemaExportService;
 import org.example.koreandatatest.service.TableSchemaService;
 import org.example.koreandatatest.util.FormDataEncoder;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +51,9 @@ public class TableSchemaControllerTest {
 
   @MockitoBean
   private TableSchemaService tableSchemaService;
+
+  @MockitoBean
+  private SchemaExportService schemaExportService;
 
   @DisplayName("[GET] 테이블 스키마 페이지 -> 테이블 스키마 뷰 (정상)")
   @Test
@@ -161,14 +165,14 @@ public class TableSchemaControllerTest {
     then(tableSchemaService).should().deleteTableSchema(githubUser.id(), schemaName);
   }
 
-  @DisplayName("[GET] 테이블 스키마 파일 다운로드 -> 테이블 스키마 파일 (정상)")
+  @DisplayName("[GET] 테이블 스키마 파일 다운로드 -> 비 로그인 테이블 스키마 파일 (정상)")
   @Test
   void givenTableSchema_whenDownloading_thenReturnsFile() throws Exception {
     // Given
     TableSchemaExportRequest request = TableSchemaExportRequest.of(
         "test_schema",
         77,
-        ExportFileType.JSON,
+        ExportFileType.CSV,
         List.of(
             SchemaFieldRequest.of("id", MockDataType.ROW_NUMBER, 1, 0, null, null),
             SchemaFieldRequest.of("name", MockDataType.NAME, 2, 10, "option", "well"),
@@ -176,11 +180,44 @@ public class TableSchemaControllerTest {
         )
     );
     String queryParam = fromDataEncoder.encode(request, false);
+    String expectedBody = "id,name,age\n,1,jang,20";
+    given(schemaExportService.export(request.fileType(), request.toDto(null),request.rowCount()))
+        .willReturn(expectedBody);
     // When&Then
     mvc.perform(get("/table-schema/export?" + queryParam))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
         .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=table-schema.txt"))
-        .andExpect(content().json(mapper.writeValueAsString(request))); // 나중에 바꿔야 함
+        .andExpect(content().string(expectedBody));
+    then(schemaExportService).should().export(request.fileType(), request.toDto(null),request.rowCount());
+  }
+
+  @DisplayName("[GET] 테이블 스키마 파일 다운로드 -> 로그인 테이블 스키마 파일 (정상)")
+  @Test
+  void givenAuthenticateduserAndTableSchema_whenDownloading_thenReturnsFile() throws Exception {
+    // Given
+    var githubUser = new GithubUser("test-id", "test-name", "test@email.com");
+    TableSchemaExportRequest request = TableSchemaExportRequest.of(
+        "test_schema",
+        77,
+        ExportFileType.CSV,
+        List.of(
+            SchemaFieldRequest.of("id", MockDataType.ROW_NUMBER, 1, 0, null, null),
+            SchemaFieldRequest.of("name", MockDataType.NAME, 2, 10, "option", "well"),
+            SchemaFieldRequest.of("age", MockDataType.NUMBER, 3, 20, null, null)
+        )
+    );
+    String queryParam = fromDataEncoder.encode(request, false);
+    String expectedBody = "id,name,age\n,1,jang,20";
+    given(schemaExportService.export(request.fileType(), request.toDto(githubUser.id()),request.rowCount()))
+        .willReturn(expectedBody);
+    // When&Then
+    mvc.perform(get("/table-schema/export?" + queryParam)
+            .with(oauth2Login().oauth2User(githubUser)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
+        .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=table-schema.txt"))
+        .andExpect(content().string(expectedBody));
+    then(schemaExportService).should().export(request.fileType(), request.toDto(githubUser.id()),request.rowCount());
   }
 }
