@@ -7,17 +7,17 @@ import org.example.koreandatatest.domain.constant.ExportFileType;
 
 public record TableSchemaExportRequest(
     String schemaName,
-    Integer lowCount,
+    Integer rowCount,
     ExportFileType fileType,
     List<SchemaFieldRequest> schemaFields
 ) {
   public static TableSchemaExportRequest of(
       String schemaName,
-      Integer lowCount,
+      Integer rowCount,
       ExportFileType fileType,
       List<SchemaFieldRequest> schemaFields
   ) {
-    return new TableSchemaExportRequest(schemaName, lowCount,fileType, schemaFields);
+    return new TableSchemaExportRequest(schemaName, rowCount,fileType, schemaFields);
   }
 
   public TableSchemaDto toDto(String userId) {

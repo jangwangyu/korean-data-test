@@ -1,6 +1,5 @@
 package org.example.koreandatatest.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.example.koreandatatest.DTO.response.TableSchemaResponse;
 import org.example.koreandatatest.DTO.security.GithubUser;
 import org.example.koreandatatest.domain.constant.ExportFileType;
 import org.example.koreandatatest.domain.constant.MockDataType;
+import org.example.koreandatatest.service.SchemaExportService;
 import org.example.koreandatatest.service.TableSchemaService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +31,7 @@ public class TableSchemaController {
 
   private final ObjectMapper mapper;
   private final TableSchemaService tableSchemaService;
+  private final SchemaExportService schemaExportService;
 
   @GetMapping("/table-schema")
   public String tableSchema(Model model, @RequestParam(required = false) String schemaName,
@@ -84,21 +85,16 @@ public class TableSchemaController {
   }
 
   @GetMapping("/table-schema/export")
-  public ResponseEntity<String> exportTableSchema(TableSchemaExportRequest tableSchemaExportRequest) {
+  public ResponseEntity<String> exportTableSchema(TableSchemaExportRequest tableSchemaExportRequest, @AuthenticationPrincipal GithubUser githubUser) {
+
+    String body = schemaExportService.export(tableSchemaExportRequest.fileType(),
+        tableSchemaExportRequest.toDto(githubUser != null ? githubUser.id() : null), tableSchemaExportRequest.rowCount());
+    String filename= tableSchemaExportRequest.schemaName() + "." + tableSchemaExportRequest;
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=table-schema.txt")
-        .body(json(tableSchemaExportRequest));
+        .body(body);
   }
-
-  private String json(Object object){
-    try{
-      return mapper.writeValueAsString(object);
-    }catch (JsonProcessingException e){
-      throw new RuntimeException(e);
-    }
-  }
-
 
   private TableSchemaResponse defaultTableSchema(String schemaName) {
     return new TableSchemaResponse(
