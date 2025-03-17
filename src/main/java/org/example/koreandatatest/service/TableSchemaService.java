@@ -42,4 +42,8 @@ public class TableSchemaService {
 
   }
 
+  public void deleteTableSchema(String userId, String schemaName) {
+    tableSchemaRepository.deleteByUserIdAndSchemaName(userId, schemaName);
+  }
+
 }
