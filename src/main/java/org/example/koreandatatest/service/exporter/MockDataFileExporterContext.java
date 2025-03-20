@@ -14,8 +14,7 @@ public class MockDataFileExporterContext {
   private final Map<ExportFileType, MockDataFileExporter> mockDataFileExporterMap;
 
 
-  public MockDataFileExporterContext(
-      List<MockDataFileExporter> mockDataFileExporters) {
+  public MockDataFileExporterContext(List<MockDataFileExporter> mockDataFileExporters) {
     this.mockDataFileExporterMap = mockDataFileExporters.stream()
         .collect(Collectors.toMap(MockDataFileExporter::getType, Function.identity()));
   }

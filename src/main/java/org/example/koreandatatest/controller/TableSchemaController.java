@@ -87,8 +87,10 @@ public class TableSchemaController {
   @GetMapping("/table-schema/export")
   public ResponseEntity<String> exportTableSchema(TableSchemaExportRequest tableSchemaExportRequest, @AuthenticationPrincipal GithubUser githubUser) {
 
-    String body = schemaExportService.export(tableSchemaExportRequest.fileType(),
-        tableSchemaExportRequest.toDto(githubUser != null ? githubUser.id() : null), tableSchemaExportRequest.rowCount());
+    String body = schemaExportService.export(
+        tableSchemaExportRequest.fileType(),
+        tableSchemaExportRequest.toDto(githubUser != null ? githubUser.id() : null),
+        tableSchemaExportRequest.rowCount());
     String filename= tableSchemaExportRequest.schemaName() + "." + tableSchemaExportRequest;
 
     return ResponseEntity.ok()
